@@ -1,13 +1,11 @@
-//
 const express = require("express");
-//
-const app = express();
-
 const http = require("http");
-
 const cors = require("cors");
 const { Server } = require("socket.io");
+
+const app = express();
 app.use(cors());
+
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
@@ -16,30 +14,28 @@ const io = new Server(server, {
   },
 });
 
-// start the emittion of events and the detection of the events
+// Start the emission of events and the detection of the events
 io.on("connection", (socket) => {
-  // use the socket to grab what is in the connection
+  // Use the socket to grab what is in the connection
   console.log("socket id", socket.id);
 
-  // events to listen for
+  // Events to listen for
   socket.on("join_room", (data) => {
-    // join the room
+    // Join the room
     socket.join(data);
-    console.log(`User  with id ${socket.id} joined the room ${data}`);
+    console.log(`User with id ${socket.id} joined the room ${data}`);
   });
 
-  // listen to the send message event
+  // Listen to the send message event
   socket.on("send_message", (data) => {
-    // emit the received message
-    // specify the specific room
-    socket.to(data.room).emit("receive_message", (data) => {
-      console.log("message", data);
-    });
+    console.log("received message", data);
+    // Emit the received message to the specified room
+    socket.to(data.room).emit("receive_message", data);
   });
 });
 
-// disconnet user
-// set the listening port
+// Disconnect user
+// Set the listening port
 server.listen(3001, () => {
   console.log("server is running on port 3001");
 });
