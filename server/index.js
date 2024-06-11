@@ -30,7 +30,11 @@ io.on("connection", (socket) => {
 
   // listen to the send message event
   socket.on("send_message", (data) => {
-    console.log("message", data);
+    // emit the received message
+    // specify the specific room
+    socket.to(data.room).emit("receive_message", (data) => {
+      console.log("message", data);
+    });
   });
 });
 
