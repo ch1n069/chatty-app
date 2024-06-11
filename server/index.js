@@ -6,15 +6,12 @@ const app = express();
 const http = require("http");
 
 const cors = require("cors");
-const { Server } = require("socket");
+const { Server } = require("socket.io");
 app.use(cors());
 const server = http.createServer(app);
-
 const io = new Server(server, {
   cors: {
-    // url to the react server
     origin: "http://localhost:3000",
-    // specify the methods that are to be accepted
     methods: ["GET", "POST"],
   },
 });
@@ -23,6 +20,18 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   // use the socket to grab what is in the connection
   console.log("socket id", socket.id);
+
+  // events to listen for
+  socket.on("join_room", (data) => {
+    // join the room
+    socket.join(data);
+    console.log(`User  with id ${socket.id} joined the room ${data}`);
+  });
+
+  // listen to the send message event
+  socket.on("send_message", (data) => {
+    console.log("message", data);
+  });
 });
 
 // disconnet user
